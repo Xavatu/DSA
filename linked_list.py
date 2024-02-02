@@ -9,8 +9,8 @@ class Node:
                 f"value={self.value}, "
                 f"next={self.next.__hash__() if self.next else None})")
 
-    def __del__(self):
-        print(f"{self} was deleted")
+    # def __del__(self):
+    #     print(f"{self} was deleted")
 
 
 class LinkedList:
@@ -78,8 +78,20 @@ class LinkedList:
             len_ += 1
         return len_
 
-    def insert(self, afterNode, newNode):
-        pass  # здесь будет ваш код
+    def insert(self, afterNode: Node | None, newNode: Node):
+        if afterNode is None:
+            if self.head is None:
+                self.head = newNode
+            else:
+                newNode.next = self.head.next
+                self.head = newNode
+            if self.tail is None:
+                self.tail = newNode
+            return
+        newNode.next = afterNode.next
+        afterNode.next = newNode
+        if self.tail == afterNode:
+            self.tail = newNode
 
     def __iter__(self):
         node = self.head
