@@ -40,8 +40,8 @@ class LinkedList:
             node = node.next
         return None
 
-    def find_all(self, val) -> list[Node] | None:
-        return []
+    def find_all(self, val) -> list[Node]:
+        return [node for node in self if node.value == val]
 
     def delete(self, val, all=False):
         node = self.head
