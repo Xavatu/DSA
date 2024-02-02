@@ -73,7 +73,10 @@ class LinkedList:
         self.tail = None
 
     def len(self) -> int:
-        return 0  # здесь будет ваш код
+        len_ = 0
+        for _ in self:
+            len_ += 1
+        return len_
 
     def insert(self, afterNode, newNode):
         pass  # здесь будет ваш код
