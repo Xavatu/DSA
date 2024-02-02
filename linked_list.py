@@ -20,11 +20,11 @@ class LinkedList:
 
     def print_all_nodes(self):
         node = self.head
-        while node != None:
+        while node is not None:
             print(node.value)
             node = node.next
 
-    def find(self, val):
+    def find(self, val) -> Node | None:
         node = self.head
         while node is not None:
             if node.value == val:
@@ -32,8 +32,8 @@ class LinkedList:
             node = node.next
         return None
 
-    def find_all(self, val):
-        return []  # здесь будет ваш код
+    def find_all(self, val) -> list[Node] | None:
+        return []
 
     def delete(self, val, all=False):
         pass  # здесь будет ваш код
@@ -41,7 +41,7 @@ class LinkedList:
     def clean(self):
         pass  # здесь будет ваш код
 
-    def len(self):
+    def len(self) -> int:
         return 0  # здесь будет ваш код
 
     def insert(self, afterNode, newNode):
