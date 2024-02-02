@@ -4,6 +4,14 @@ class Node:
         self.value = v
         self.next = None
 
+    def __repr__(self):
+        return (f"Node(hash={self.__hash__()}, "
+                f"value={self.value}, "
+                f"next={self.next.__hash__() if self.next else None})")
+
+    def __del__(self):
+        print(f"{self} was deleted")
+
 
 class LinkedList:
 
@@ -69,3 +77,9 @@ class LinkedList:
 
     def insert(self, afterNode, newNode):
         pass  # здесь будет ваш код
+
+    def __iter__(self):
+        node = self.head
+        while node is not None:
+            yield node
+            node = node.next
