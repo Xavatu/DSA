@@ -56,7 +56,13 @@ class LinkedList:
                 node = node.next
 
     def clean(self):
-        pass  # здесь будет ваш код
+        node = self.head
+        while node is not None:
+            tmp_node = node
+            node = tmp_node.next
+            del tmp_node
+        self.head = None
+        self.tail = None
 
     def len(self) -> int:
         return 0  # здесь будет ваш код
