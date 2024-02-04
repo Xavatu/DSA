@@ -1,5 +1,5 @@
 import pytest
-from linked_list import LinkedList, Node
+from linked_list import LinkedList, Node, sum_linked_lists_nodes
 
 
 @pytest.fixture()
@@ -201,3 +201,21 @@ def test_insert_list_with_several_elements(get_list_with_several_elements,
     list_.insert(nodes[2], node)
     assert nodes[2].next == node
     assert node.next == nodes[3]
+
+
+def test_sum_linked_lists_nodes(get_list_with_several_elements,
+                                get_empty_list):
+    list1 = get_list_with_several_elements
+    list2 = get_list_with_several_elements
+    list3 = get_empty_list
+
+    result_list = sum_linked_lists_nodes(list1, list2)
+    assert [node.value for node in result_list] == [2, 4, 6, 4, 8, 2, 14]
+    assert result_list.head.value == 2
+    assert result_list.head.next.value == 4
+    assert result_list.tail.value == 14
+
+    try:
+        sum_linked_lists_nodes(list1, list3)
+    except ValueError:
+        assert True

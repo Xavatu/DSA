@@ -101,3 +101,29 @@ class LinkedList:
 
     def _get_nodes(self) -> list[Node]:
         return [node for node in self]
+
+
+def sum_linked_lists_nodes(list1: LinkedList, list2: LinkedList) -> LinkedList:
+    if list1.len() != list2.len():
+        raise ValueError(
+            f"the number of elements in lists must be equal: "
+            f"{list1.len()} != {list2.len()}")
+
+    new_list = LinkedList()
+    new_list.head = None
+    node1 = list1.head
+    node2 = list2.head
+    previous_node = None
+
+    for i in range(list1.len()):
+        node = Node(v=node1.value + node2.value)
+        node1 = node1.next
+        node2 = node2.next
+        if previous_node is None:
+            new_list.head = node
+        else:
+            previous_node.next = node
+        previous_node = node
+
+    new_list.tail = previous_node
+    return new_list
