@@ -98,3 +98,6 @@ class LinkedList:
         while node is not None:
             yield node
             node = node.next
+
+    def _get_nodes(self) -> list[Node]:
+        return [node for node in self]
