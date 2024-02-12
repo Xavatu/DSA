@@ -41,7 +41,8 @@ class LinkedList2:
             if node.value == val:
                 if self.head == node:  # if first (head)
                     self.head = node.next
-                    node.next.prev = None
+                    if node.next:
+                        node.next.prev = None
                 if self.tail == node:  # if last (tail)
                     self.tail = node.prev
                 if node.prev is not None:
