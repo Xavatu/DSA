@@ -60,6 +60,8 @@ class LinkedList2:
     def clean(self):
         for node in self:
             del node
+        self.head = None
+        self.tail = None
 
     def len(self):
         return len([node for node in self])
