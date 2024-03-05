@@ -76,7 +76,7 @@ class Deque:
             node = node.next
 
     def __repr__(self):
-        return str([node for node in self])
+        return str([node.value for node in self])
 
 
 def is_palindrome(string: str):
