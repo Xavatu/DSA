@@ -60,7 +60,7 @@ class OrderedList:
         next_node.prev = new_node
         prev_node.next = new_node
 
-    def find(self, val):
+    def find(self, val) -> Node | None:
         next_node = self._head.next
         prev_node = self._tail.prev
 
@@ -108,7 +108,6 @@ class OrderedList:
                     if self.compare(right_node.prev.value, val) == 0:
                         right_node = right_node.prev
                     else:
-                        print(f"{right_node=}")
                         right_node.prev.next = right_node.next
                         right_node.next.prev = right_node.prev
                         break
@@ -120,7 +119,7 @@ class OrderedList:
         self._head.next = self._tail
         self._tail.prev = self._head
 
-    def len(self):
+    def len(self) -> int:
         return len(self.get_all())
 
     def get_all(self) -> list[Node]:
