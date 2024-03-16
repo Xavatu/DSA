@@ -119,9 +119,7 @@ class OrderedList:
             ):
                 right_node = right_node.prev
             elif right_node and self.compare(right_node.value, val) == 0:
-                if right_node.prev and not isinstance(
-                    right_node.prev, DummyNode
-                ):
+                if right_node.prev:
                     if self.compare(right_node.prev.value, val) == 0:
                         right_node = right_node.prev
                     else:
