@@ -6,7 +6,7 @@ class RollingHash:
         self._length = 0
 
     def __call__(self, s: str) -> int:
-        self._length = 0
+        self._length = len(s)
         hash_so_far = 0
         p_pow = 1
         for i in range(self._length):
@@ -31,23 +31,19 @@ class HashTable:
         if not self._empty_slots:
             return None
 
-        indexes = set()
+        empty_first = None  # first empty slot index after hash-index
+
         for i in range(self.size):
             index = (self.hash_fun(value) + i * self.step) % self.size
-            if index in indexes:
-                break
-            if not self.slots[index]:
+            if self.slots[index] is None:
                 return index
-            indexes.add(index)
 
-        if len(indexes) == self.size:
-            return None
-
-        for i in (set(range(self.size)) - indexes):
-            if not self.slots[i]:
-                return i
-
-        return None
+            if self.slots[i] is None and empty_first is None:
+                empty_first = i
+            if i > index and self.slots[i] is None:
+                if empty_first is None or empty_first < index:
+                    empty_first = i
+        return empty_first
 
     def put(self, value: str) -> int | None:
         index = self.seek_slot(value)
@@ -58,7 +54,12 @@ class HashTable:
         return index
 
     def find(self, value: str) -> int | None:
-        index = self.seek_slot(value)
-        if not self.seek_slot(value):
+        if self._empty_slots == self.size:
             return None
-        return index
+        for i in range(self.size):
+            index = (self.hash_fun(value) + i * self.step) % self.size
+            if self.slots[index] is not None and self.slots[index] == value:
+                return index
+            if self.slots[i] is not None and self.slots[i] == value:
+                return i
+        return None
