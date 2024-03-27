@@ -57,9 +57,11 @@ class HashTable:
         if self._empty_slots == self.size:
             return None
         for i in range(self.size):
-            index = (self.hash_fun(value) + i * self.step) % self.size
-            if self.slots[index] is not None and self.slots[index] == value:
-                return index
-            if self.slots[i] is not None and self.slots[i] == value:
-                return i
+            skip_index = (self.hash_fun(value) + i * self.step) % self.size
+            serial_index = (self.hash_fun(value) + i) % self.size
+
+            if self.slots[skip_index] is not None and self.slots[skip_index] == value:
+                return skip_index
+            if self.slots[serial_index] is not None and self.slots[serial_index] == value:
+                return serial_index
         return None
