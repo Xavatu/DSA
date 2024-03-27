@@ -37,12 +37,10 @@ class HashTable:
             index = (self.hash_fun(value) + i * self.step) % self.size
             if self.slots[index] is None:
                 return index
-
             if self.slots[i] is None and empty_first is None:
                 empty_first = i
-            if i > index and self.slots[i] is None:
-                if empty_first is None or empty_first < index:
-                    empty_first = i
+            if i > index and self.slots[i] is None and (empty_first is None or empty_first < index):
+                empty_first = i
         return empty_first
 
     def put(self, value: str) -> int | None:
