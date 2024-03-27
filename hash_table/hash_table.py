@@ -31,17 +31,19 @@ class HashTable:
         if not self._empty_slots:
             return None
 
-        empty_first = None  # first empty slot index after hash-index
+        result_index = None
 
         for i in range(self.size):
-            index = (self.hash_fun(value) + i * self.step) % self.size
-            if self.slots[index] is None:
-                return index
-            if self.slots[i] is None and empty_first is None:
-                empty_first = i
-            if i > index and self.slots[i] is None and (empty_first is None or empty_first < index):
-                empty_first = i
-        return empty_first
+            skip_index = (self.hash_fun(value) + i * self.step) % self.size
+            serial_index = (self.hash_fun(value) + i) % self.size
+
+            if self.slots[skip_index] is None:
+                result_index = skip_index
+                break
+            if (self.slots[serial_index], result_index) == (None, None):
+                result_index = serial_index
+
+        return result_index
 
     def put(self, value: str) -> int | None:
         index = self.seek_slot(value)
