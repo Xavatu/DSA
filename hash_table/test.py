@@ -5,6 +5,7 @@ from hash_table import HashTable, RollingHash
 
 HASH = RollingHash()("12345")
 
+
 def get_empty_hash_table():
     return HashTable(sz=100, stp=3)
 
@@ -31,9 +32,7 @@ def test_seek_slot_empty_hash_table():
 
 @pytest.mark.parametrize(
     "sz, stp, expected",
-    [(10, 3, 8),
-     (13, 2, 0),
-     (33, 5, 13)],
+    [(10, 3, 8), (13, 2, 0), (33, 5, 13)],
 )
 def test_seek_slot_sz_stp_expected(sz, stp, expected):
     ht = get_almost_full_hash_table(sz, stp)
@@ -44,9 +43,7 @@ def test_seek_slot_sz_stp_expected(sz, stp, expected):
 
 @pytest.mark.parametrize(
     "sz, stp, expected",
-    [(10, 3, 8),
-     (13, 2, 0),
-     (33, 5, 13)],
+    [(10, 3, 8), (13, 2, 0), (33, 5, 13)],
 )
 def test_put_sz_stp_expected(sz, stp, expected):
     ht = get_almost_full_hash_table(sz, stp)
@@ -62,13 +59,10 @@ def test_find_empty_hash_table():
 
 @pytest.mark.parametrize(
     "sz, stp, expected",
-    [(10, 3, 8),
-     (13, 2, 0),
-     (33, 5, 13)],
+    [(10, 3, 8), (13, 2, 0), (33, 5, 13)],
 )
 def test_find_sz_stp_expected(sz, stp, expected):
     ht = get_almost_full_hash_table(sz, stp)
     assert ht.find("12345") is None
     ht.put("12345")
     assert ht.find("12345") == expected
-
