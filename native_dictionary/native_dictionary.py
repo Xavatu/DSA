@@ -68,7 +68,7 @@ class NativeDictionary:
         return index
 
     def is_key(self, key: str) -> bool:
-        return True if self._find_index(key) is not None else False
+        return bool(self._find_index(key))
 
     def put(self, key: str, value):
         index = self._seek_slot(key)
