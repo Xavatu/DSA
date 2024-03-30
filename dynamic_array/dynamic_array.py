@@ -2,61 +2,57 @@ import ctypes
 
 
 class DynArray:
+    def __init__(self, size: int = 2**10):
+        self._count = 0
+        self._capacity = size
+        self._array = self._make_array(self._capacity)
 
-    def __init__(self):
-        self.count = 0
-        self.capacity = 16
-        self.array = self.make_array(self.capacity)
-
-    def __len__(self):
-        return self.count
-
-    def make_array(self, new_capacity):
+    @staticmethod
+    def _make_array(new_capacity: int):
         return (new_capacity * ctypes.py_object)()
 
-    def __getitem__(self, i):
-        if i < 0 or i >= self.count:
-            raise IndexError('Index is out of bounds')
-        return self.array[i]
+    def _resize(self, new_capacity: int):
+        new_array = self._make_array(new_capacity)
+        for i in range(self._count):
+            new_array[i] = self._array[i]
+        self._array = new_array
+        self._capacity = new_capacity
 
-    def resize(self, new_capacity):
-        new_array = self.make_array(new_capacity)
-        for i in range(self.count):
-            new_array[i] = self.array[i]
-        self.array = new_array
-        self.capacity = new_capacity
+    def append(self, item):
+        if self._count == self._capacity:
+            self._resize(self._capacity * 2)
+        self._array[self._count] = item
+        self._count += 1
 
-    def append(self, itm):
-        if self.count == self.capacity:
-            self.resize(2 * self.capacity)
-        self.array[self.count] = itm
-        self.count += 1
-
-    def insert(self, i, itm):
-        if i < 0 or i > self.count:
-            raise IndexError('Index is out of bounds')
-        if self.count == self.capacity:
-            self.resize(2 * self.capacity)
-        if self.count == i:
-            self.array[i] = itm
-            self.count += 1
+    def insert(self, i, item):
+        if i < 0 or i > self._count:
+            raise IndexError("Index is out of bounds")
+        if self._count == self._capacity:
+            self._resize(self._capacity * 2)
+        if self._count == i:
+            self._array[i] = item
+            self._count += 1
             return
-        prev = self.array[i]
-        for j in range(i + 1, self.count):
-            self.array[j], prev = prev, self.array[j]
-        self.array[self.count] = prev
-        self.array[i] = itm
-        self.count += 1
+        prev = self._array[i]
+        for j in range(i + 1, self._count):
+            self._array[j], prev = prev, self._array[j]
+        self._array[self._count] = prev
+        self._array[i] = item
+        self._count += 1
 
     def delete(self, i):
-        if i < 0 or i >= self.count:
-            raise IndexError('Index is out of bounds')
-        for j in range(i, self.count - 1):
-            self.array[j] = self.array[j + 1]
-        self.count -= 1
-        if self.count < self.capacity / 2:
-            self.resize(max(16, int(self.capacity / 1.5)))
+        if i < 0 or i >= self._count:
+            raise IndexError("Index is out of bounds")
+        for j in range(i, self._count - 1):
+            self._array[j] = self._array[j + 1]
+        self._count -= 1
+        if self._count < self._capacity / 2:
+            self._resize(max(2**10, int(self._capacity / 1.5)))
 
-    def __repr__(self):
-        return (f"{self.capacity=}, {self.count=}, "
-                f"elements={[self.array[i] for i in range(self.count)]}")
+    def __len__(self):
+        return self._count
+
+    def __getitem__(self, i):
+        if i < 0 or i >= self._count:
+            raise IndexError("Index is out of bounds")
+        return self._array[i]
