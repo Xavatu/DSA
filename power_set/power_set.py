@@ -2,7 +2,7 @@ import ctypes
 
 
 class Block:
-    def __init__(self, capacity: int = 2**10):
+    def __init__(self, capacity: int = 2**6):
         self._capacity = capacity
         self._count = 0
         self._array = self._make_array(self._capacity)
@@ -47,9 +47,13 @@ class Block:
 
 
 class HashTable:
-    def __init__(self, _sz: int = 2**10):
+    def __init__(self, _sz: int = 2**6):
         # storage size should be degree of 2
         self._storage = Block(_sz)
+
+    @property
+    def size(self) -> int:
+        return self._storage.size - self._storage.empty_cells
 
     def hash_fun(self, obj) -> int:
         return hash(obj) % self._storage.size
@@ -67,7 +71,10 @@ class HashTable:
         h2 = self._skip_fun(obj)
         for i in range(self._storage.size):
             skip_index = (h1 + i * h2) % self._storage.size
-            if self._storage[skip_index] is None:
+            if (
+                self._storage[skip_index] is None
+                or self._storage[skip_index] == obj
+            ):
                 result_index = skip_index
                 break
         return result_index
@@ -111,4 +118,119 @@ class HashTable:
             return
         self._storage.insert(index, None)
         if self._storage.fullness < 0.15:
-            self._resize_storage(max(2**8, self._storage.size // 2))
+            self._resize_storage(max(2**6, self._storage.size // 2))
+
+    def __getitem__(self, index: int):
+        return self._storage[index]
+
+    def __iter__(self):
+        return (
+            self._storage[i]
+            for i in range(self._storage.size)
+            if self._storage[i] is not None
+        )
+
+    def __repr__(self):
+        return str([el for el in self])
+
+
+class DictItem:
+    def __init__(self, key, value):
+        self._key = key
+        self._value = value
+
+    @property
+    def key(self):
+        return self._key
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
+
+    def __hash__(self):
+        return hash(self._key)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self._key == other.key
+
+
+class Dict:
+    def __init__(self):
+        self._items: HashTable = HashTable()
+
+    @property
+    def size(self) -> int:
+        return self._items.size
+
+    def is_key(self, key):
+        return self._items.find(DictItem(key=key, value=None)) is not None
+
+    def put(self, key, value):
+        item = self.get(key)
+        if item:
+            item.value = value
+            return
+        item = DictItem(key=key, value=value)
+        self._items.put(item)
+
+    def get(self, key):
+        index = self._items.find(DictItem(key=key, value=None))
+        if index is not None:
+            return self._items[index].value
+        return None
+
+    def _as_dict(self) -> dict:
+        return {item.key: item.value for item in self._items}
+
+
+class PowerSet:
+    def __init__(self):
+        # "type" : storage
+        self._type_storage: Dict = Dict()
+
+    def size(self):
+        return self._type_storage.size
+
+    def put(self, value):
+        type_ = str(type(value))
+        type_storage: HashTable = self._type_storage.get(type_)
+        if type_storage is None:
+            type_storage = HashTable(2**6)
+            self._type_storage.put(key=type_, value=type_storage)
+        type_storage.put(value)
+
+    def get(self, value):
+        type_ = str(type(value))
+        type_storage = self._type_storage.get(type_)
+        if type_storage is None or type_storage.find(value) is None:
+            return False
+        return True
+
+    def remove(self, value):
+        # возвращает True если value удалено
+        # иначе False
+        return False
+
+    def intersection(self, set2):
+        # пересечение текущего множества и set2
+        return None
+
+    def union(self, set2):
+        # объединение текущего множества и set2
+        return None
+
+    def difference(self, set2):
+        # разница текущего множества и set2
+        return None
+
+    def issubset(self, set2):
+        # возвращает True, если set2 есть
+        # подмножество текущего множества,
+        # иначе False
+        return False
+
