@@ -1,7 +1,7 @@
 import ctypes
 
 
-class ResizableBlock:
+class Block:
     def __init__(self, capacity: int = 2**10):
         self._capacity = capacity
         self._count = 0
@@ -36,20 +36,6 @@ class ResizableBlock:
     def fullness(self) -> float:
         return self._count / self._capacity
 
-    def resize(self, new_capacity: int, clean: bool = False):
-        new_array = self._make_array(new_capacity)
-        self._count = 0
-        if clean:
-            self._capacity = new_capacity
-            self._array = new_array
-            return
-        for i in range(self._capacity):
-            new_array[i] = self._array[i]
-            if self._array[i] is not None:
-                self._count += 1
-        self._capacity = new_capacity
-        self._array = new_array
-
     def insert(self, i, item):
         if i < 0 or i > self._capacity:
             raise IndexError("Index is out of bounds")
@@ -81,9 +67,9 @@ class RollingHash:
 
 
 class HashTable:
-    def __init__(self):
+    def __init__(self, _sz: int = 2**10):
         # storage size should be degree of 2
-        self._storage = ResizableBlock()
+        self._storage = Block(_sz)
         self._hash1 = RollingHash(p=31, m=10**9 + 7)
         self._hash2 = RollingHash(p=37, m=10**9 + 9)
 
@@ -108,10 +94,43 @@ class HashTable:
                 break
         return result_index
 
+    def _resize_storage(self, new_size: int):
+        old_storage = self._storage
+        new_storage = Block(new_size)
+        self._storage = new_storage
+        # refill storage
+        for i in range(old_storage.size):
+            value = self._storage[i]
+            if value is None:
+                continue
+            new_index = self.seek_slot(value)
+            if new_index is None:
+                break
+            new_storage.insert(new_index, value)
 
     def put(self, value: str) -> int:
         index = self.seek_slot(value)
-        if index:
-            self._storage[index] = value
-            return index
-        # storage is full - resize
+        if not index:  # storage is full
+            self._resize_storage(new_size=self._storage.size * 2)
+            index = self.seek_slot(value)
+        self._storage.insert(index, value)
+        return index
+
+    def find(self, value: str) -> int | None:
+        result_index = None
+        for i in range(self._storage.size):
+            skip_index = (
+                self.hash_fun(value) + i * self._skip_fun(value)
+            ) % self._storage.size
+            if self._storage[skip_index] == value:
+                result_index = skip_index
+                break
+        return result_index
+
+    def remove(self, value: str):
+        index = self.find(value)
+        if not index:
+            return
+        self._storage.insert(index, None)
+        if self._storage.fullness < 0.15:
+            self._resize_storage(self._storage.size // 2)
