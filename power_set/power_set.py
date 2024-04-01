@@ -184,6 +184,13 @@ class Dict:
             return self._items[index].value
         return None
 
+    def remove(self, key):
+        obj = DictItem(key=key, value=None)
+        self._items.remove(obj)
+
+    def values(self):
+        return (item.value for item in self._items)
+
     def _as_dict(self) -> dict:
         return {item.key: item.value for item in self._items}
 
@@ -194,7 +201,10 @@ class PowerSet:
         self._type_storage: Dict = Dict()
 
     def size(self):
-        return self._type_storage.size
+        size = 0
+        for el in self._type_storage.values():
+            size += el.size
+        return size
 
     def put(self, value):
         type_ = str(type(value))
@@ -212,9 +222,12 @@ class PowerSet:
         return True
 
     def remove(self, value):
-        # возвращает True если value удалено
-        # иначе False
-        return False
+        type_ = str(type(value))
+        type_storage: HashTable = self._type_storage.get(type_)
+        if type_storage is None or type_storage.find(value) is None:
+            return False
+        type_storage.remove(value)
+        return True
 
     def intersection(self, set2):
         # пересечение текущего множества и set2
@@ -233,4 +246,3 @@ class PowerSet:
         # подмножество текущего множества,
         # иначе False
         return False
-
