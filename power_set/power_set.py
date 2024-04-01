@@ -46,47 +46,25 @@ class Block:
         self._array[i] = item
 
 
-class RollingHash:
-    def __init__(self, p: int = 31, m: int = 10**9 + 7):
-        self._p = p
-        self._m = m
-        self._hash = 0
-        self._length = 0
-
-    def __call__(self, s: str) -> int:
-        self._length = len(s)
-        hash_so_far = 0
-        p_pow = 1
-        for i in range(self._length):
-            hash_so_far = (
-                hash_so_far + (1 + ord(s[i]) - ord("a")) * p_pow
-            ) % self._m
-            p_pow = (p_pow * self._p) % self._m
-        self._hash = hash_so_far
-        return self._hash
-
-
 class HashTable:
     def __init__(self, _sz: int = 2**10):
         # storage size should be degree of 2
         self._storage = Block(_sz)
-        self._hash1 = RollingHash(p=31, m=10**9 + 7)
-        self._hash2 = RollingHash(p=37, m=10**9 + 9)
 
-    def hash_fun(self, value: str) -> int:
-        return self._hash1(value) % self._storage.size
+    def hash_fun(self, obj) -> int:
+        return hash(obj) % self._storage.size
 
-    def _skip_fun(self, value: str) -> int:
-        pre_hash = self._hash2(value) % (self._storage.size - 1)
+    def _skip_fun(self, obj) -> int:
+        pre_hash = hash(str(obj)) % (self._storage.size - 1)
         result_hash = pre_hash - (pre_hash - 1) % 2
         return result_hash
 
-    def seek_slot(self, value: str) -> int | None:
+    def seek_slot(self, obj) -> int | None:
         if not self._storage.empty_cells:
             return None
         result_index = None
-        h1 = self.hash_fun(value)
-        h2 = self._skip_fun(value)
+        h1 = self.hash_fun(obj)
+        h2 = self._skip_fun(obj)
         for i in range(self._storage.size):
             skip_index = (h1 + i * h2) % self._storage.size
             if self._storage[skip_index] is None:
@@ -100,57 +78,37 @@ class HashTable:
         self._storage = new_storage
         # refill storage
         for i in range(old_storage.size):
-            value = old_storage[i]
-            if value is None:
+            obj = old_storage[i]
+            if obj is None:
                 continue
-            new_index = self.seek_slot(value)
+            new_index = self.seek_slot(obj)
             if new_index is None:
                 break
-            new_storage.insert(new_index, value)
+            new_storage.insert(new_index, obj)
 
-    def put(self, value: str) -> int:
-        index = self.seek_slot(value)
+    def put(self, obj) -> int:
+        index = self.seek_slot(obj)
         if index is None:  # storage is full
             self._resize_storage(new_size=self._storage.size * 2)
-            index = self.seek_slot(value)
-        self._storage.insert(index, value)
+            index = self.seek_slot(obj)
+        self._storage.insert(index, obj)
         return index
 
-    def find(self, value: str) -> int | None:
+    def find(self, obj) -> int | None:
         result_index = None
-        h1 = self.hash_fun(value)
-        h2 = self._skip_fun(value)
+        h1 = self.hash_fun(obj)
+        h2 = self._skip_fun(obj)
         for i in range(self._storage.size):
             skip_index = (h1 + i * h2) % self._storage.size
-            if self._storage[skip_index] == value:
+            if self._storage[skip_index] == obj:
                 result_index = skip_index
                 break
         return result_index
 
-    def remove(self, value: str):
-        index = self.find(value)
+    def remove(self, obj):
+        index = self.find(obj)
         if index is None:
             return
         self._storage.insert(index, None)
         if self._storage.fullness < 0.15:
             self._resize_storage(max(2**8, self._storage.size // 2))
-
-
-
-
-#     def return_slots(self) -> list:
-#         ret = []
-#         for i in range(self._storage.size):
-#             ret.append(self._storage[i])
-#         return ret
-#
-#
-# if __name__ == "__main__":
-#     ht = HashTable(_sz=2**10)
-#     start = datetime.datetime.now()
-#     for i in range(20000):
-#         ind = ht.put(f"int {i}")
-#         assert ht.find(f"int {i}") == ind
-#         # ht.remove(f"int {i}")
-#     end = datetime.datetime.now()
-#     print((end - start).total_seconds())
