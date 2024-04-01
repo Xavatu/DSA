@@ -85,10 +85,10 @@ class HashTable:
         if not self._storage.empty_cells:
             return None
         result_index = None
+        h1 = self.hash_fun(value)
+        h2 = self._skip_fun(value)
         for i in range(self._storage.size):
-            skip_index = (
-                self.hash_fun(value) + i * self._skip_fun(value)
-            ) % self._storage.size
+            skip_index = (h1 + i * h2) % self._storage.size
             if self._storage[skip_index] is None:
                 result_index = skip_index
                 break
@@ -100,7 +100,7 @@ class HashTable:
         self._storage = new_storage
         # refill storage
         for i in range(old_storage.size):
-            value = self._storage[i]
+            value = old_storage[i]
             if value is None:
                 continue
             new_index = self.seek_slot(value)
@@ -110,7 +110,7 @@ class HashTable:
 
     def put(self, value: str) -> int:
         index = self.seek_slot(value)
-        if not index:  # storage is full
+        if index is None:  # storage is full
             self._resize_storage(new_size=self._storage.size * 2)
             index = self.seek_slot(value)
         self._storage.insert(index, value)
@@ -118,10 +118,10 @@ class HashTable:
 
     def find(self, value: str) -> int | None:
         result_index = None
+        h1 = self.hash_fun(value)
+        h2 = self._skip_fun(value)
         for i in range(self._storage.size):
-            skip_index = (
-                self.hash_fun(value) + i * self._skip_fun(value)
-            ) % self._storage.size
+            skip_index = (h1 + i * h2) % self._storage.size
             if self._storage[skip_index] == value:
                 result_index = skip_index
                 break
@@ -129,8 +129,28 @@ class HashTable:
 
     def remove(self, value: str):
         index = self.find(value)
-        if not index:
+        if index is None:
             return
         self._storage.insert(index, None)
         if self._storage.fullness < 0.15:
-            self._resize_storage(self._storage.size // 2)
+            self._resize_storage(max(2**8, self._storage.size // 2))
+
+
+
+
+#     def return_slots(self) -> list:
+#         ret = []
+#         for i in range(self._storage.size):
+#             ret.append(self._storage[i])
+#         return ret
+#
+#
+# if __name__ == "__main__":
+#     ht = HashTable(_sz=2**10)
+#     start = datetime.datetime.now()
+#     for i in range(20000):
+#         ind = ht.put(f"int {i}")
+#         assert ht.find(f"int {i}") == ind
+#         # ht.remove(f"int {i}")
+#     end = datetime.datetime.now()
+#     print((end - start).total_seconds())
