@@ -156,9 +156,7 @@ class PowerSet:
             if not s2.get(el):
                 continue
             new_ps.put(el)
-        if new_ps.size():
-            return new_ps
-        return None
+        return new_ps
 
     def union(self, set2) -> "PowerSet":
         new_ps = PowerSet()
@@ -166,9 +164,7 @@ class PowerSet:
             new_ps.put(el)
         for el in set2:
             new_ps.put(el)
-        if new_ps.size():
-            return new_ps
-        return None
+        return new_ps
 
     def difference(self, set2) -> "PowerSet":
         new_ps = PowerSet()
@@ -176,9 +172,7 @@ class PowerSet:
             if set2.get(el):
                 continue
             new_ps.put(el)
-        if new_ps.size():
-            return new_ps
-        return None
+        return new_ps
 
     def issubset(self, set2) -> bool:
         for el in set2:
@@ -199,3 +193,7 @@ class PowerSet:
 
     def __repr__(self):
         return "{" + ", ".join(str(el) for el in self.get_all()) + "}"
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.difference(other).size() == 0
