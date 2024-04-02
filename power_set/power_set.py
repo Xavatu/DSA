@@ -208,41 +208,67 @@ class PowerSet:
 
     def put(self, value):
         type_ = str(type(value))
-        type_storage: HashTable = self._type_storage.get(type_)
-        if type_storage is None:
-            type_storage = HashTable(2**6)
-            self._type_storage.put(key=type_, value=type_storage)
-        type_storage.put(value)
+        storage: HashTable = self._type_storage.get(type_)
+        if storage is None:
+            storage = HashTable(2**6)
+            self._type_storage.put(key=type_, value=storage)
+        storage.put(value)
 
     def get(self, value):
         type_ = str(type(value))
-        type_storage = self._type_storage.get(type_)
-        if type_storage is None or type_storage.find(value) is None:
+        storage = self._type_storage.get(type_)
+        if storage is None or storage.find(value) is None:
             return False
         return True
 
     def remove(self, value):
         type_ = str(type(value))
-        type_storage: HashTable = self._type_storage.get(type_)
-        if type_storage is None or type_storage.find(value) is None:
+        storage: HashTable = self._type_storage.get(type_)
+        if storage is None or storage.find(value) is None:
             return False
-        type_storage.remove(value)
+        storage.remove(value)
         return True
 
-    def intersection(self, set2):
-        # пересечение текущего множества и set2
+    def intersection(self, set2) -> "PowerSet":
+        new_ps = PowerSet()
+        for el in self:
+            if not set2.get(el):
+                continue
+            new_ps.put(el)
+        if new_ps.size():
+            return new_ps
         return None
 
     def union(self, set2):
-        # объединение текущего множества и set2
+        new_ps = PowerSet()
+        for el in self:
+            new_ps.put(el)
+        for el in set2:
+            new_ps.put(el)
+        if new_ps.size():
+            return new_ps
         return None
 
     def difference(self, set2):
-        # разница текущего множества и set2
+        new_ps = PowerSet()
+        for el in self:
+            if set2.get(el):
+                continue
+            new_ps.put(el)
+        if new_ps.size():
+            return new_ps
         return None
 
     def issubset(self, set2):
         # возвращает True, если set2 есть
         # подмножество текущего множества,
         # иначе False
-        return False
+        for el in set2:
+            if not self.get(el):
+                return False
+        return True
+
+    def __iter__(self):
+        for hash_table in self._type_storage.values():
+            for el in hash_table:
+                yield el
