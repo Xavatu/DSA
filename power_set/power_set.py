@@ -260,9 +260,6 @@ class PowerSet:
         return None
 
     def issubset(self, set2):
-        # возвращает True, если set2 есть
-        # подмножество текущего множества,
-        # иначе False
         for el in set2:
             if not self.get(el):
                 return False
