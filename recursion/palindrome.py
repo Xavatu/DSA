@@ -1,7 +1,6 @@
-def recursive_is_palindrome(string: str) -> bool:
-    if len(string) < 2:
+def recursive_is_palindrome(string: str, _i: int = 0) -> bool:
+    if _i == len(string) // 2:
         return True
-    print(string)
-    if string[0] == string[-1]:
-        return recursive_is_palindrome(string[1:-1])
+    if string[_i] == string[-(_i + 1)]:
+        return recursive_is_palindrome(string, _i + 1)
     return False
