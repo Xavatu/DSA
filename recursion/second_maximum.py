@@ -3,21 +3,12 @@ from typing import TypeVar
 Number = TypeVar("Number", int, float)
 
 
-def max_(numbers: list[Number], _max: int = 0, _i: int = 0) -> Number | None:
-    if _i == len(numbers):
-        return _max
-    _max = max_(numbers, _max, _i + 1)
-    if _max is None or numbers[_i] > _max:
-        _max = numbers[_i]
-    return _max
-
-
 def _second_max(
     numbers: list[Number],
     _second: int = None,
     _max: int = None,
     _i: int = 0,
-) -> tuple[Number | None, Number | None]:
+) -> tuple[Number, Number]:
     if _i == len(numbers):
         return _second, _max
     _second, _max = _second_max(numbers, _second, _max, _i + 1)
@@ -30,4 +21,6 @@ def _second_max(
 
 
 def second_max(numbers: list[Number]) -> Number | None:
-    return _second_max(numbers)[0]
+    if len(numbers) < 2:
+        return None
+    return _second_max(numbers, numbers[0], numbers[1])[0]
