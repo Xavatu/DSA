@@ -5,8 +5,8 @@ Number = TypeVar("Number", int, float)
 
 def _second_max(
     numbers: list[Number],
-    _second: int = None,
-    _max: int = None,
+    _second: int,
+    _max: int,
     _i: int = 0,
 ) -> tuple[Number, Number]:
     if _i == len(numbers):
@@ -15,7 +15,7 @@ def _second_max(
     if _max is None or numbers[_i] >= _max:
         _second = _max
         _max = numbers[_i]
-    if _max > numbers[_i] and (_second is None or numbers[_i] > _second):
+    if _max > numbers[_i] > _second:
         _second = numbers[_i]
     return _second, _max
 
