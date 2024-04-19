@@ -1,4 +1,4 @@
-def recursive_print_even_numbers(list_: list[int], _i: int = 0):
+def recursive_print_even_numbers(list_: list[int], _i: int):
     if _i == len(list_):
         return
     if list_[_i] % 2 == 0:
