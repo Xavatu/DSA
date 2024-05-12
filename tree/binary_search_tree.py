@@ -74,8 +74,38 @@ class BST:
             return self._find_max(FromNode)
         return self._find_min(FromNode)
 
+    def _find_replacement(self, node: BSTNode):
+        if node.RightChild is None:
+            return None
+        return self._find_min(node.RightChild)
+
+    def _replace_node(self, node: BSTNode, new_node: BSTNode | None):
+        if node.LeftChild:
+            node.LeftChild.Parent = new_node
+        if node.RightChild:
+            node.RightChild.Parent = new_node
+        if new_node is not None:
+            new_node.Parent = node.Parent
+            new_node.LeftChild = node.LeftChild
+            new_node.RightChild = node.RightChild
+        if node == self.Root:
+            self.Root = new_node
+            return
+        if node.Parent.NodeKey > node.NodeKey:
+            node.Parent.LeftChild = new_node
+            return
+        node.Parent.RightChild = new_node
+
     def DeleteNodeByKey(self, key) -> bool:
-        pass
+        node = self.FindNodeByKey(key).Node
+        if node is None:
+            return False
+        self._count -= 1
+        candidate = self._find_replacement(node)
+        if candidate is not None:
+            self._replace_node(candidate, candidate.RightChild)
+        self._replace_node(node, candidate)
+        return True
 
     def Count(self) -> int:
         return self._count

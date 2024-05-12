@@ -87,3 +87,14 @@ def test_find_min_max(get_test_tree):
     assert bst.FinMinMax(bst.Root, True).NodeKey == 8
     assert bst.FinMinMax(bst.Root.LeftChild, False).NodeKey == 0
     assert bst.FinMinMax(bst.Root.LeftChild, True).NodeKey == 4
+
+
+def test_delete_node_by_key(get_test_tree):
+    bst = get_test_tree
+    assert bst.DeleteNodeByKey(5)
+    assert bst.FindNodeByKey(5).Node.NodeKey == 4
+    assert not bst.FindNodeByKey(5).ToLeft
+    assert bst.Root.NodeKey == 6
+    assert bst.DeleteNodeByKey(2)
+    assert bst.FindNodeByKey(2).Node.NodeKey == 0
+    assert not bst.FindNodeByKey(2).ToLeft
