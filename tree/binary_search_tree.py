@@ -25,11 +25,13 @@ class BST:
     def _find_node(self, node: BSTNode, key) -> BSTNode:
         if node.NodeKey == key:
             return node
-        if node.NodeKey > key and node.LeftChild:
-            return self._find_node(node.LeftChild, key)
-        if node.RightChild:
-            return self._find_node(node.RightChild, key)
-        return node
+        if node.NodeKey > key:
+            return (
+                self._find_node(node.LeftChild, key) if node.LeftChild else node
+            )
+        return (
+            self._find_node(node.RightChild, key) if node.RightChild else node
+        )
 
     def FindNodeByKey(self, key) -> BSTFind:
         result = BSTFind()
