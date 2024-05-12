@@ -67,11 +67,15 @@ def test_add_key_value(get_test_tree, get_empty_tree):
     assert bst.Count() == 1
     bst = get_test_tree
     assert not bst.AddKeyValue(8, 8)
+    assert bst.FindNodeByKey(9).Node.NodeKey == 8
     assert bst.AddKeyValue(9, 9)
     assert bst.Count() == 9
     assert bst.FindNodeByKey(9).Node.NodeKey == 9
     assert bst.FindNodeByKey(9).NodeHasKey
+    assert bst.FindNodeByKey(8).Node.RightChild.NodeKey == 9
+    assert bst.FindNodeByKey(-1).Node.NodeKey == 0
     assert bst.AddKeyValue(-1, -1)
     assert bst.Count() == 10
     assert bst.FindNodeByKey(-1).Node.NodeKey == -1
     assert bst.FindNodeByKey(-1).NodeHasKey
+    assert bst.FindNodeByKey(0).Node.LeftChild.NodeKey == -1
