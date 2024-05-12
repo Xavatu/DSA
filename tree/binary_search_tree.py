@@ -55,21 +55,25 @@ class BST:
         found.Node.RightChild = BSTNode(key, val, found.Node)
         return True
 
+    @staticmethod
+    def _find_min(node: BSTNode):
+        while node.LeftChild is not None:
+            node = node.LeftChild
+        return node
+
+    @staticmethod
+    def _find_max(node: BSTNode):
+        while node.RightChild is not None:
+            node = node.RightChild
+        return node
+
     def FinMinMax(self, FromNode: BSTNode, FindMax: bool) -> BSTNode:
-        pass
+        if FindMax:
+            return self._find_max(FromNode)
+        return self._find_min(FromNode)
 
     def DeleteNodeByKey(self, key) -> bool:
         pass
 
     def Count(self) -> int:
         return self._count
-
-
-def find_node(node: BSTNode, key) -> BSTNode | None:
-    if node is None:
-        return
-    if node.NodeKey > key and node.LeftChild:
-        return find_node(node.LeftChild, key)
-    if node.RightChild:
-        return find_node(node.RightChild, key)
-    return node

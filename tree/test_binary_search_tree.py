@@ -79,3 +79,11 @@ def test_add_key_value(get_test_tree, get_empty_tree):
     assert bst.FindNodeByKey(-1).Node.NodeKey == -1
     assert bst.FindNodeByKey(-1).NodeHasKey
     assert bst.FindNodeByKey(0).Node.LeftChild.NodeKey == -1
+
+
+def test_find_min_max(get_test_tree):
+    bst = get_test_tree
+    assert bst.FinMinMax(bst.Root, False).NodeKey == 0
+    assert bst.FinMinMax(bst.Root, True).NodeKey == 8
+    assert bst.FinMinMax(bst.Root.LeftChild, False).NodeKey == 0
+    assert bst.FinMinMax(bst.Root.LeftChild, True).NodeKey == 4
