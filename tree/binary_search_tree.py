@@ -21,6 +21,8 @@ class BST:
     def __init__(self, node: BSTNode | None, _count=0):
         self.Root = node
         self._count = _count
+        if node is not None and _count == 0:
+            self._count = 1
 
     def _find_node(self, node: BSTNode, key) -> BSTNode:
         if node.NodeKey == key:
