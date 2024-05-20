@@ -25,22 +25,15 @@ def get_empty_tree():
 
 @pytest.fixture()
 def get_test_tree():
-    n5 = BSTNode(5, 5, None)
-    n2 = BSTNode(2, 2, n5)
-    n5.LeftChild = n2
-    n7 = BSTNode(7, 7, n5)
-    n5.RightChild = n7
-    n0 = BSTNode(0, 0, n2)
-    n2.LeftChild = n0
-    n3 = BSTNode(3, 3, n2)
-    n2.RightChild = n3
-    n6 = BSTNode(6, 6, n7)
-    n7.LeftChild = n6
-    n8 = BSTNode(8, 8, n7)
-    n7.RightChild = n8
-    n4 = BSTNode(4, 4, n3)
-    n3.RightChild = n4
-    tree = BST(n5, 8)
+    tree = BST(None)
+    tree.AddKeyValue(5, 5)
+    tree.AddKeyValue(2, 2)
+    tree.AddKeyValue(7, 7)
+    tree.AddKeyValue(0, 0)
+    tree.AddKeyValue(3, 3)
+    tree.AddKeyValue(6, 6)
+    tree.AddKeyValue(8, 8)
+    tree.AddKeyValue(4, 4)
     return tree
 
 
@@ -98,3 +91,20 @@ def test_delete_node_by_key(get_test_tree):
     assert bst.DeleteNodeByKey(2)
     assert bst.FindNodeByKey(2).Node.NodeKey == 0
     assert not bst.FindNodeByKey(2).ToLeft
+
+
+def test_orders(get_test_tree):
+    bst = get_test_tree
+    assert [el.NodeKey for el in bst.WideAllNodes()] == [5, 2, 7, 0, 3, 6, 8, 4]
+    assert [el.NodeKey for el in bst.DeepAllNodes(0)] == [0, 2, 3, 4, 5, 6, 7, 8]
+    assert [el.NodeKey for el in bst.DeepAllNodes(1)] == [0, 4, 3, 2, 6, 8, 7, 5]
+    assert [el.NodeKey for el in bst.DeepAllNodes(2)] == [5, 2, 0, 3, 4, 7, 6, 8]
+
+
+def test_mirrored_tree(get_test_tree):
+    bst = get_test_tree
+    bst = BST.mirror(bst)
+    assert [el.NodeKey for el in bst.WideAllNodes()] == [5, 7, 2, 8, 6, 3, 0, 4]
+    assert [el.NodeKey for el in bst.DeepAllNodes(0)] == [8, 7, 6, 5, 4, 3, 2, 0]
+    assert [el.NodeKey for el in bst.DeepAllNodes(1)] == [8, 6, 7, 4, 3, 0, 2, 5]
+    assert [el.NodeKey for el in bst.DeepAllNodes(2)] == [5, 7, 8, 6, 2, 3, 4, 0]
