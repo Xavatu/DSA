@@ -38,7 +38,7 @@ class SimpleTreeIterator(Iterator):
         self._generator = orders[order]
 
     def __iter__(self):
-        return self._generator
+        return self
 
     def _inorder(
         self, node: SimpleTreeNode
