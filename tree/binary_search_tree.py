@@ -1,3 +1,4 @@
+from math import log
 from collections.abc import Iterator, Generator
 from collections import deque
 from copy import deepcopy
@@ -198,3 +199,40 @@ class BST:
         for el in new_tree.DeepAllNodes(2):
             el.LeftChild, el.RightChild = el.RightChild, el.LeftChild
         return new_tree
+
+
+class aBST:
+    def __init__(self, depth):
+        tree_size = pow(2, depth + 1) - 1
+        self.Tree = [None] * tree_size
+        self._depth = depth
+
+    def _left_child_index(self, i: int) -> int:
+        return 2 * i + 1
+
+    def _right_child_index(self, i: int) -> int:
+        return 2 * i + 2
+
+    def FindKeyIndex(self, key: int) -> int | None:
+        i = 0
+        while log(i + 1, 2) < self._depth + 1:
+            node = self.Tree[i]
+            if node is None:
+                i = -i
+                break
+            if node == key:
+                break
+            if node > key:
+                i = self._left_child_index(i)
+                continue
+            i = self._right_child_index(i)
+        return i if i < len(self.Tree) else None
+
+    def AddKey(self, key: int) -> int:
+        i = self.FindKeyIndex(key)
+        if i is None:
+            return -1
+        if i < 0 or (i == 0 and self.Tree[0] is None):
+            i = abs(i)
+            self.Tree[i] = key
+        return i

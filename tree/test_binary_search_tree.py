@@ -1,6 +1,6 @@
 import pytest
 
-from tree.binary_search_tree import BSTNode, BSTFind, BST
+from tree.binary_search_tree import BSTNode, BSTFind, BST, aBST
 
 
 #
@@ -34,6 +34,13 @@ def get_test_tree():
     tree.AddKeyValue(6, 6)
     tree.AddKeyValue(8, 8)
     tree.AddKeyValue(4, 4)
+    return tree
+
+
+@pytest.fixture()
+def get_test_abst():
+    tree = aBST(3)
+    tree.Tree = [8, 3, 10, 1, 6, None, 14, None, None, 4, 7, None, None, 13, 15]
     return tree
 
 
@@ -108,3 +115,22 @@ def test_mirrored_tree(get_test_tree):
     assert [el.NodeKey for el in bst.DeepAllNodes(0)] == [8, 7, 6, 5, 4, 3, 2, 0]
     assert [el.NodeKey for el in bst.DeepAllNodes(1)] == [8, 6, 7, 4, 3, 0, 2, 5]
     assert [el.NodeKey for el in bst.DeepAllNodes(2)] == [5, 7, 8, 6, 2, 3, 4, 0]
+
+
+def test_abst(get_test_abst):
+    abst = get_test_abst
+    assert abst.FindKeyIndex(0) == -7
+    assert abst.AddKey(0) == 7
+    assert abst.FindKeyIndex(0) == 7
+    assert abst.Tree == [8, 3, 10, 1, 6, None, 14, 0, None, 4, 7, None, None, 13, 15]
+    assert abst.FindKeyIndex(2) == -8
+    assert abst.AddKey(2) == 8
+    assert abst.FindKeyIndex(2) == 8
+    assert abst.Tree == [8, 3, 10, 1, 6, None, 14, 0, 2, 4, 7, None, None, 13, 15]
+    assert abst.FindKeyIndex(9) == -5
+    assert abst.AddKey(9) == 5
+    assert abst.FindKeyIndex(9) == 5
+    assert abst.Tree == [8, 3, 10, 1, 6, 9, 14, 0, 2, 4, 7, None, None, 13, 15]
+    assert abst.FindKeyIndex(17) is None
+    assert abst.AddKey(17) == -1
+
