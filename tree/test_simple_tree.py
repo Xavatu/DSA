@@ -18,7 +18,7 @@ from tree.simple_tree import SimpleTree, SimpleTreeNode
 
 
 @pytest.fixture()
-def get_test_tree():
+def get_test_nodes():
     n1 = SimpleTreeNode(1, None)
     n2 = SimpleTreeNode(2, n1)
     n3 = SimpleTreeNode(3, n1)
@@ -36,21 +36,42 @@ def get_test_tree():
     n3.Children.append(n8)
     n1.Children.append(n2)
     n1.Children.append(n3)
-    simple_tree = SimpleTree(n1)
+    return [n1, n2, n3, n4, n5, n6, n7, n8, n9]
+
+
+@pytest.fixture()
+def get_test_tree(get_test_nodes):
+    simple_tree = SimpleTree(get_test_nodes[0])
     return simple_tree
 
 
 def test_inorder(get_test_tree):
     tree = get_test_tree
     assert [el.NodeValue for el in tree.inorder()] == [
-        1, 2, 4, 5, 9, 3, 6, 7, 8
+        1,
+        2,
+        4,
+        5,
+        9,
+        3,
+        6,
+        7,
+        8,
     ]
 
 
 def test_postorder(get_test_tree):
     tree = get_test_tree
     assert [el.NodeValue for el in tree.postorder()] == [
-        4, 9, 5, 2, 6, 7, 8, 3, 1
+        4,
+        9,
+        5,
+        2,
+        6,
+        7,
+        8,
+        3,
+        1,
     ]
 
 
@@ -90,7 +111,15 @@ def test_move_node(get_test_tree):
     assert n3 in n2.Children
     assert n3 not in n1.Children
     assert [el.NodeValue for el in tree.postorder()] == [
-        4, 9, 5, 6, 7, 8, 3, 2, 1
+        4,
+        9,
+        5,
+        6,
+        7,
+        8,
+        3,
+        2,
+        1,
     ]
 
 
@@ -102,3 +131,30 @@ def test_count(get_test_tree):
 def test_leaf_count(get_test_tree):
     tree = get_test_tree
     assert tree.LeafCount() == 5
+
+
+def test_subtree_size(get_test_nodes, get_test_tree):
+    nodes = get_test_nodes
+    tree = get_test_tree
+    subtree_size = tree._subtree_size(tree.Root, {})
+    assert [subtree_size[nodes[i]] for i in range(9)] == [
+        9,
+        4,
+        4,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+    ]
+
+
+def test_even_trees(get_test_nodes, get_test_tree):
+    nodes = get_test_nodes
+    tree = get_test_tree
+    assert tree.EvenTrees() == []
+    assert tree.even_trees(tree.Root.Children[0]) == [nodes[1], nodes[4]]
+    assert tree.even_trees(tree.Root.Children[1]) == []
+    tree = SimpleTree(nodes[8])
+    assert tree.EvenTrees() == []

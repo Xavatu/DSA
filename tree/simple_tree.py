@@ -1,3 +1,4 @@
+from collections import deque
 from collections.abc import Iterator
 from typing import List, Generator, Any, Tuple
 
@@ -23,17 +24,18 @@ class SimpleTreeIterator(Iterator):
     def __init__(self, start: SimpleTreeNode, order: str):
         """
         :param start: start node for traversal
-        :param order: traversal order ("inorder", "postorder", "levels")
+        :param order: traversal order ("inorder", "postorder", "levels", "bfs")
         """
         self._start: SimpleTreeNode = start
         orders = {
             "inorder": self._inorder(self._start),
             "postorder": self._postorder(self._start),
             "levels": self._node_levels(self._start, 0),
+            "bfs": self._bfs(deque([self._start])),
         }
         if order not in orders.keys():
             raise ValueError(
-                "param 'order' should be in ('inorder', 'postorder', 'levels')"
+                "param 'order' should be in ('inorder', 'postorder', 'levels', 'bfs')"
             )
         self._generator = orders[order]
 
@@ -61,13 +63,24 @@ class SimpleTreeIterator(Iterator):
             yield from self._node_levels(child, level + 1)
         yield node, level
 
+    def _bfs(
+        self, queue: deque[SimpleTreeNode]
+    ) -> Generator[SimpleTreeNode, Any, None]:
+        if not queue:
+            return
+        node = queue.popleft()
+        yield node
+        for child in node.Children:
+            queue.append(child)
+        yield from self._bfs(queue)
+
     def __next__(self):
         return next(self._generator)
 
 
 class SimpleTree:
-    def __init__(self, root: SimpleTreeNode | None):
-        self.Root: SimpleTreeNode | None = root
+    def __init__(self, root: SimpleTreeNode):
+        self.Root: SimpleTreeNode = root
 
     def inorder(self) -> Generator[SimpleTreeNode, Any, None]:
         yield from SimpleTreeIterator(self.Root, "inorder")
@@ -77,6 +90,9 @@ class SimpleTree:
 
     def node_levels(self) -> List[Tuple[SimpleTreeNode, int]]:
         return [el for el in SimpleTreeIterator(self.Root, "levels")]
+
+    def bfs(self) -> Generator[SimpleTreeNode, Any, None]:
+        yield from SimpleTreeIterator(self.Root, "bfs")
 
     def AddChild(self, ParentNode: SimpleTreeNode, NewChild: SimpleTreeNode):
         NewChild.Parent = ParentNode
@@ -104,3 +120,46 @@ class SimpleTree:
 
     def LeafCount(self) -> int:
         return len([el for el in self.postorder() if not el.Children])
+
+    def _subtree_size(
+        self, node: SimpleTreeNode, result: dict[SimpleTreeNode, int]
+    ) -> dict[SimpleTreeNode, int]:
+        size = 1
+        for child in node.Children:
+            self._subtree_size(child, result)
+            size += result[child]
+        result.update({node: size})
+        return result
+
+    def _even_trees(
+        self,
+        queue: deque[tuple[SimpleTreeNode, bool]],
+        subtree_size: dict[SimpleTreeNode, int],
+        result: list[SimpleTreeNode],
+    ) -> list[SimpleTreeNode]:
+        if not queue:
+            return result
+        tmp_result = []
+        node, parent_edge = queue.popleft()
+        num_of_not_even_subtree = 0
+        for child in node.Children:
+            if subtree_size[child] % 2 == 1:
+                num_of_not_even_subtree += 1
+                queue.append((child, True))
+                continue
+            tmp_result.append(node)
+            tmp_result.append(child)
+            queue.append((child, False))
+        if parent_edge or (
+            num_of_not_even_subtree >= 1 and num_of_not_even_subtree % 2 == 1
+        ):
+            result.extend(tmp_result)
+            self._even_trees(queue, subtree_size, result)
+        return result
+
+    def even_trees(self, node: SimpleTreeNode) -> list[SimpleTreeNode]:
+        subtree_size = self._subtree_size(node, {})
+        return self._even_trees(deque([(node, False)]), subtree_size, [])
+
+    def EvenTrees(self) -> list[SimpleTreeNode]:
+        return self.even_trees(self.Root)
