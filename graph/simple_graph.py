@@ -59,38 +59,32 @@ class SimpleGraph:
         self.m_adjacency[v1][v2] = 0
         self.m_adjacency[v2][v1] = 0
 
-    def _dfs(
-        self,
-        current: int,
-        to: int,
-        dq: deque,
-        append: bool,
-    ) -> deque:
-        self.vertex[current].Hit = True
-        if append:
-            dq.append(current)
-        neighbours = [
-            i for i in range(self.max_vertex) if self.m_adjacency[current][i]
-        ]
-        if to in neighbours:
-            dq.append(to)
-            return dq
-        for neighbour in neighbours:
-            if not self.vertex[neighbour].Hit:
-                result = self._dfs(neighbour, to, dq, True)
-                if result:
-                    return result
-        if not dq:
-            return deque()
-        current = dq.pop()
-        return self._dfs(current, to, dq, False)
+    def _depth_first_search(self, vfrom, vto):
+        cur = vfrom
+        dq = deque((vfrom,))
+        while dq:
+            self.vertex[cur].Hit = True
+            if self.m_adjacency[cur][vto]:
+                self.vertex[vto].Hit = True
+                dq.append(vto)
+                return dq
+            found = False
+            for i in range(self.max_vertex):
+                if self.m_adjacency[cur][i] and not self.vertex[i].Hit:
+                    cur = i
+                    dq.append(i)
+                    found = True
+                    break
+            if not found:
+                dq.pop()
+                cur = dq[-1] if dq else None
+        return dq
 
     def DepthFirstSearch(self, VFrom: int, VTo: int) -> list[Vertex]:
         if self.vertex[VFrom] is None or self.vertex[VTo] is None:
             return []
-        dq = deque()
         for el in self.vertex:
             if not el:
                 continue
             el.Hit = False
-        return [self.vertex[i] for i in self._dfs(VFrom, VTo, dq, True)]
+        return [self.vertex[i] for i in self._depth_first_search(VFrom, VTo)]

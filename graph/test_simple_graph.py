@@ -115,5 +115,6 @@ def test_dfs(get_graph):
     graph = get_graph
     assert [el.Value for el in graph.DepthFirstSearch(0, 1)] == [0, 1]
     assert [el.Value for el in graph.DepthFirstSearch(0, 8)] == [0, 1, 8]
+    assert [el.Value for el in graph.DepthFirstSearch(0, 9)] == [0, 1, 3, 2, 9]
     graph.AddVertex(4)
     assert [el.Value for el in graph.DepthFirstSearch(0, 4)] == []
