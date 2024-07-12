@@ -1,11 +1,13 @@
+from collections import deque
+
+
 class Vertex:
     def __init__(self, val: int):
         self.Value = val
+        self.Hit = False
 
-    def __eq__(self, other):
-        if isinstance(other, Vertex):
-            return self.Value == other.Value
-        return False
+    def __repr__(self):
+        return f"Vertex({self.Value}, {self.Hit})"
 
 
 class SimpleGraph:
@@ -56,3 +58,43 @@ class SimpleGraph:
             raise IndexError("Index out of bounds")
         self.m_adjacency[v1][v2] = 0
         self.m_adjacency[v2][v1] = 0
+
+    def _dfs(
+        self,
+        current: int,
+        to: int,
+        dq: deque,
+        result: list[Vertex],
+        append: bool,
+    ) -> list[Vertex]:
+        self.vertex[current].Hit = True
+        if append:
+            result.append(self.vertex[current])
+            dq.append(current)
+        if self.m_adjacency[current][to]:
+            return result
+        neighbours = [
+            i for i in range(self.max_vertex) if self.m_adjacency[current][i]
+        ]
+        for neighbour in neighbours:
+            if self.m_adjacency[neighbour][to]:
+                self.vertex[neighbour].Hit = True
+                result.append(self.vertex[neighbour])
+                return result
+        for neighbour in neighbours:
+            if not self.vertex[neighbour].Hit:
+                self._dfs(neighbour, to, dq, result, True)
+        if not dq:
+            return []
+        current = dq.pop()
+        self._dfs(current, to, dq, result, False)
+
+    def DepthFirstSearch(self, VFrom: int, VTo: int) -> list[Vertex]:
+        if self.vertex[VFrom] is None or self.vertex[VTo] is None:
+            return []
+        dq = deque()
+        for el in self.vertex:
+            if not el:
+                continue
+            el.Hit = False
+        return self._dfs(VFrom, VTo, dq, [], True)

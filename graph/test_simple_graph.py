@@ -109,3 +109,11 @@ def test_remove_edge(get_graph):
     graph.RemoveEdge(9, 2)
     assert graph.IsEdge(9, 2) is False
     assert graph.IsEdge(2, 9) is False
+
+
+def test_dfs(get_graph):
+    graph = get_graph
+    assert [el.Value for el in graph.DepthFirstSearch(0, 1)] == [0]
+    assert [el.Value for el in graph.DepthFirstSearch(0, 8)] == [0, 1]
+    graph.AddVertex(4)
+    assert [el.Value for el in graph.DepthFirstSearch(0, 4)] == []
