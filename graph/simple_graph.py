@@ -64,30 +64,26 @@ class SimpleGraph:
         current: int,
         to: int,
         dq: deque,
-        result: list[Vertex],
         append: bool,
-    ) -> list[Vertex]:
+    ) -> deque:
         self.vertex[current].Hit = True
         if append:
-            result.append(self.vertex[current])
             dq.append(current)
-        if self.m_adjacency[current][to]:
-            return result
         neighbours = [
             i for i in range(self.max_vertex) if self.m_adjacency[current][i]
         ]
-        for neighbour in neighbours:
-            if self.m_adjacency[neighbour][to]:
-                self.vertex[neighbour].Hit = True
-                result.append(self.vertex[neighbour])
-                return result
+        if to in neighbours:
+            dq.append(to)
+            return dq
         for neighbour in neighbours:
             if not self.vertex[neighbour].Hit:
-                self._dfs(neighbour, to, dq, result, True)
+                result = self._dfs(neighbour, to, dq, True)
+                if result:
+                    return result
         if not dq:
-            return []
+            return deque()
         current = dq.pop()
-        self._dfs(current, to, dq, result, False)
+        return self._dfs(current, to, dq, False)
 
     def DepthFirstSearch(self, VFrom: int, VTo: int) -> list[Vertex]:
         if self.vertex[VFrom] is None or self.vertex[VTo] is None:
@@ -97,4 +93,4 @@ class SimpleGraph:
             if not el:
                 continue
             el.Hit = False
-        return self._dfs(VFrom, VTo, dq, [], True)
+        return [self.vertex[i] for i in self._dfs(VFrom, VTo, dq, True)]
