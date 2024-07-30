@@ -125,3 +125,52 @@ class SimpleGraph:
                 continue
             el.Hit = False
         return [self.vertex[i] for i in self._breadth_first_search(VFrom, VTo)]
+
+    def _triangle_cycle_dfs(self, start: int):
+        cur = start
+        dq = deque((start,))
+        while dq:
+            self.vertex[cur].Hit = True
+            if len(dq) == 3 and self.m_adjacency[cur][start]:
+                return dq
+            if len(dq) == 3:
+                dq.pop()
+                cur = dq[-1]
+            unvisited = False
+            for i in range(self.max_vertex):
+                if not self.m_adjacency[cur][i]:
+                    continue
+                if not self.vertex[i].Hit:
+                    cur = i
+                    dq.append(i)
+                    unvisited = True
+                    break
+            if unvisited:
+                continue
+            dq.pop()
+            if not dq:
+                continue
+            cur = dq.pop()
+        return dq
+
+    def WeakVertices(self) -> list[Vertex]:
+        sorted_vertices = sorted(
+            [i for i in range(self.max_vertex)],
+            key=lambda i: sum(self.m_adjacency[i]),
+        )
+        good_vertices = set()
+        for i in range(self.max_vertex):
+            v = sorted_vertices[i]
+            if v in good_vertices:
+                continue
+            if sum(self.m_adjacency[v]) < 2:
+                continue
+            cycle = self._triangle_cycle_dfs(v)
+            for el in cycle:
+                good_vertices.add(el)
+            for el in self.vertex:
+                if not el:
+                    continue
+                el.Hit = False
+        weak_vertices = set((i for i in range(self.max_vertex))) ^ good_vertices
+        return [self.vertex[i] for i in weak_vertices if self.vertex[i]]

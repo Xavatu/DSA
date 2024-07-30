@@ -49,6 +49,34 @@ def get_graph():
     return graph
 
 
+@pytest.fixture()
+def get_graph2():
+    graph = SimpleGraph(size=9)
+    graph.vertex = [
+        Vertex(0),
+        Vertex(1),
+        Vertex(2),
+        Vertex(3),
+        Vertex(4),
+        Vertex(5),
+        Vertex(6),
+        Vertex(7),
+        Vertex(8),
+    ]
+    graph.m_adjacency = [
+        [0, 1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 0, 1, 0, 0, 0, 0],
+        [1, 1, 0, 1, 0, 1, 0, 0, 0],
+        [1, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 1, 0, 1, 0, 1, 1, 0],
+        [0, 0, 0, 0, 0, 1, 0, 1, 0],
+        [0, 0, 0, 0, 0, 1, 1, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 1, 0],
+    ]
+    return graph
+
+
 def test_add_vertex(get_empty_graph, get_graph):
     empty_graph = get_empty_graph
     empty_graph.AddVertex(0)
@@ -127,3 +155,10 @@ def test_bfs(get_graph):
     assert [el.Value for el in graph.BreadthFirstSearch(0, 9)] == [0, 2, 9]
     graph.AddVertex(4)
     assert [el.Value for el in graph.BreadthFirstSearch(0, 4)] == []
+
+
+def test_weak_verices(get_graph, get_graph2):
+    graph = get_graph
+    assert [el.Value for el in graph.WeakVertices()] == [0, 1, 2, 3, 6, 8, 9]
+    graph = get_graph2
+    assert [el.Value for el in graph.WeakVertices()] == [4, 8]
