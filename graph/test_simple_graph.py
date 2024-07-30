@@ -157,7 +157,7 @@ def test_bfs(get_graph):
     assert [el.Value for el in graph.BreadthFirstSearch(0, 4)] == []
 
 
-def test_weak_verices(get_graph, get_graph2):
+def test_weak_vertices(get_graph, get_graph2):
     graph = get_graph
     assert [el.Value for el in graph.WeakVertices()] == [0, 1, 2, 3, 6, 8, 9]
     graph = get_graph2
